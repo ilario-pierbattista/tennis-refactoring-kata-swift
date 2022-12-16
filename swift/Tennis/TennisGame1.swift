@@ -1,83 +1,83 @@
 import Foundation
 
+struct Player {
+    let name: String
+    var score: Int
+}
+
 class TennisGame1: TennisGame {
-    private let player1: String
-    private let player2: String
-    private var score1: Int
-    private var score2: Int
+    private var player1: Player
+    private var player2: Player
     
     required init(player1: String, player2: String) {
-        self.player1 = player1
-        self.player2 = player2
-        self.score1 = 0
-        self.score2 = 0
+        self.player1 = Player(name: player1, score: 0)
+        self.player2 = Player(name: player2, score: 0)
     }
 
     func wonPoint(_ playerName: String) {
-        if playerName == "player1" {
-            score1 += 1
+        if playerName == player1.name {
+            player1.score += 1
         } else {
-            score2 += 1
+            player2.score += 1
         }
+    }
+
+    func equalScore(_ score: Int) -> String {
+        switch score
+            {
+            case 0:
+                return "Love-All"
+
+            case 1:
+                return "Fifteen-All"
+
+            case 2:
+                return "Thirty-All"
+
+            default:
+                return "Deuce"
+            }
+    }
+
+    func advantageScore(score1: Int, score2: Int) -> String {
+        let difference = score1 - score2
+        let absDifference = abs(difference)
+
+        let player = difference > 0 ? player1.name : player2.name
+
+        switch absDifference {
+            case 1: 
+               return "Advantage \(player)"
+            default: 
+               return "Win for \(player)"
+        }
+    }
+
+    let scoreToString: [Int: String] = [
+        0: "Love", 
+        1: "Fifteen",
+        2: "Thirty",
+        3: "Forty"
+    ]
+
+    func baseScore(score1: Int, score2: Int) -> String {
+        let score1Str = scoreToString[score1, default: ""]
+        let score2Str = scoreToString[score2, default: ""]
+        
+        return "\(score1Str)-\(score2Str)"
     }
     
     var score: String? {
-        var score = ""
-        var tempScore = 0
-        if score1 == score2
+        if player1.score == player2.score
         {
-            switch score1
-            {
-            case 0:
-                score = "Love-All"
-
-            case 1:
-                score = "Fifteen-All"
-
-            case 2:
-                score = "Thirty-All"
-
-            default:
-                score = "Deuce"
-                
-            }
+            return equalScore(player1.score)
         }
-        else if score1>=4 || score2>=4
+        
+        if player1.score>=4 || player2.score>=4
         {
-            let minusResult = score1-score2
-            if minusResult==1 { score = "Advantage player1" }
-            else if minusResult  == -1 { score = "Advantage player2" }
-            else if minusResult>=2 { score = "Win for player1" }
-            else { score = "Win for player2" }
+            return advantageScore(score1: player1.score, score2: player2.score)
         }
-        else
-        {
-            for i in 1..<3
-            {
-                if i==1 { tempScore = score1 }
-                else { score = "\(score)-"; tempScore = score2 }
-                switch tempScore
-                {
-                case 0:
-                    score = "\(score)Love"
-
-                case 1:
-                    score = "\(score)Fifteen"
-
-                case 2:
-                    score = "\(score)Thirty"
-
-                case 3:
-                    score = "\(score)Forty"
-
-                default:
-                    break
-
-                }
-            }
-        }
-        return score
+        
+        return baseScore(score1: player1.score, score2: player2.score)
     }
-    
-    
 }
