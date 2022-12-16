@@ -2,7 +2,7 @@ import Foundation
 
 struct Player {
     let name: String
-    var score: Int
+    let score: Int
 }
 
 class TennisGame1: TennisGame {
@@ -14,15 +14,19 @@ class TennisGame1: TennisGame {
         self.player2 = Player(name: player2, score: 0)
     }
 
+    func increaseScore(for player: Player) -> Player {
+        Player(name: player.name, score: player.score + 1)
+    }
+
     func wonPoint(_ playerName: String) {
         if playerName == player1.name {
-            player1.score += 1
+            player1 = increaseScore(for: player1)
         } else {
-            player2.score += 1
+            player2 = increaseScore(for: player2)
         }
     }
 
-    func equalScore(_ score: Int) -> String {
+    func sameScore(_ score: Int) -> String {
         switch score
             {
             case 0:
@@ -39,17 +43,17 @@ class TennisGame1: TennisGame {
             }
     }
 
-    func advantageScore(score1: Int, score2: Int) -> String {
-        let difference = score1 - score2
+    func advantageScore(player1: Player, player2: Player) -> String {
+        let difference = player1.score - player2.score
         let absDifference = abs(difference)
 
-        let player = difference > 0 ? player1.name : player2.name
+        let playerName = difference > 0 ? player1.name : player2.name
 
         switch absDifference {
             case 1: 
-               return "Advantage \(player)"
+               return "Advantage \(playerName)"
             default: 
-               return "Win for \(player)"
+               return "Win for \(playerName)"
         }
     }
 
@@ -70,12 +74,12 @@ class TennisGame1: TennisGame {
     var score: String? {
         if player1.score == player2.score
         {
-            return equalScore(player1.score)
+            return sameScore(player1.score)
         }
         
         if player1.score>=4 || player2.score>=4
         {
-            return advantageScore(score1: player1.score, score2: player2.score)
+            return advantageScore(player1: player1, player2: player2)
         }
         
         return baseScore(score1: player1.score, score2: player2.score)
